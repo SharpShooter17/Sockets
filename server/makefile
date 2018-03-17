@@ -1,9 +1,9 @@
 CC = g++
 CFLAGS  = -g -Wall -std=c++11
-INCLUDES = -I../common/include
-LFLAGS = -L../common/src
+INCLUDES = -I../common/include -I./include
+LFLAGS = -L../common/src -L/src
 
-SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp main.cpp
+SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp ../common/src/socket.cpp src/main.cpp src/listener.cpp
 OBJS = $(SRCS:.c=.o)
 MAIN = serverApp
 

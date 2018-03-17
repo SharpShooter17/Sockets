@@ -7,7 +7,19 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include "socket.hpp"
+#include "const.hpp"
+
 int main()
+{
+	Socket socket(AF_INET, server_port, address);
+	socket.connectToServer();
+	socket.closeSocket();
+	return 0;	
+}
+
+
+int main1()
 {
 	int sockfd;
 	socklen_t len;
