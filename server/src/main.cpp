@@ -11,76 +11,71 @@
 #include "const.hpp"
 #include <iostream>
 #include "connectionrefusedexception.hpp"
+#include <pthread.h>
+#include <memory>
+#include "request.hpp"
+#include "responseTime.hpp"
+#include <string.h>
+#include "protocol.hpp"
+
+void dumpHex(const void* data, unsigned int size) {
+	char ascii[17];
+	unsigned int i, j;
+	ascii[16] = '\0';
+	for (i = 0; i < size; ++i) {
+		printf("%02X ", ((unsigned char*)data)[i]);
+		if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+			ascii[i % 16] = ((unsigned char*)data)[i];
+		} else {
+			ascii[i % 16] = '.';
+		}
+		if ((i+1) % 8 == 0 || i+1 == size) {
+			printf(" ");
+			if ((i+1) % 16 == 0) {
+				printf("|  %s \n", ascii);
+			} else if (i+1 == size) {
+				ascii[(i+1) % 16] = '\0';
+				if ((i+1) % 16 <= 8) {
+					printf(" ");
+				}
+				for (j = (i+1) % 16; j < 16; ++j) {
+					printf("   ");
+				}
+				printf("|  %s \n", ascii);
+			}
+		}
+	}
+}
+
+void* socket_handler(void* args)
+{
+	std::cout << "Socket handler" << std::endl;
+	std::shared_ptr<Socket> client = *(std::shared_ptr<Socket>*)args;
+	
+	char* buffer = client->readBytes();
+	Request req = *(Request*)buffer;
+		
+	req = Protocol::retreiveRequest(req);
+	
+	std::cout << "Request code: " << req.getRequestCode() << std::endl;
+	
+	delete buffer;
+	client->closeSocket();
+	
+	return NULL;
+}
 
 int main()
 {
 	Listener listener(server_port, max_clients);
 	listener.init();
-
 	while(true)
 	{	
-		Socket client;
-		try {
-			std::cout << "Server wait for client\n";
-			client = listener.acceptConnection();
-			char * buffer = client.readBytes();
-			std::cout << *buffer << std::endl;
-			delete buffer;
-			client.closeSocket();
-		} catch (ConnectionRefusedException &ex)
-		{
-			perror(ex.what());
-			client.closeSocket();
-		}
-	}
-}
-
-int main1()
-{
-	int server_sockfd, client_sockfd;
-	socklen_t server_len, client_len;
-	struct sockaddr_in server_address;
-	struct sockaddr_in client_address;
-	server_sockfd = socket (AF_INET, SOCK_STREAM, 0);
-	server_address.sin_family = AF_INET;
-	server_address.sin_addr.s_addr = htonl (INADDR_ANY);
-	server_address.sin_port = htons (9734);
-	server_len = sizeof (server_address);
-	bind (server_sockfd, (struct sockaddr *)
-	&server_address, server_len);
-	/*  Create a connection queue, ignore child exit
-	details and wait for clients.  */
-	listen (server_sockfd, 5);
-	signal (SIGCHLD, SIG_IGN);
-	while (1)
-	{
-		char ch;
-		printf ("server waiting\n");
-		/*  Accept connection.  */
-		client_len = sizeof (client_address);
-		client_sockfd = accept (server_sockfd, (struct sockaddr *)&client_address,&client_len);
-		/*  Fork to create a process for this client
-		and perform a test to see
-		whether we're the parent or the child.
-		*/
-		if (fork () == 0)
-		{
-			/*  If we're the child, we can now
-			read/write to the client on client_sockfd.
-			The five second delay is just
-			for this demonstration.  */
-			read (client_sockfd, &ch, 1);
-			sleep (5);
-			ch++;
-			write (client_sockfd, &ch, 1);
-			close (client_sockfd);
-			exit (0);
-		}
-		/*  Otherwise, we must be the parent and our
-		work for this client is finished.  */
-		else
-		{
-			close (client_sockfd);
-		}
+		pthread_t current_thread;
+	
+		std::cout << "Server wait for client\n";
+		std::shared_ptr<Socket> client = listener.acceptConnection();	
+		pthread_create(&current_thread, NULL, socket_handler, &client);
+		pthread_join(current_thread, NULL);	
 	}
 }

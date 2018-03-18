@@ -17,13 +17,6 @@ Listener::Listener(unsigned short port, unsigned int maxClients) :
 
 void Listener::init()
 {
-	int yes = 1;
-	int e = setsockopt(this->m_server_socket.getSocket(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-	if (e != 0)
-	{
-		std::cerr << "setsockopt() ERROR" << " ERRNO: " << errno << std::endl;
-		exit(1);
-	}
 	socklen_t len = this->m_server_socket.getAddressLen();
 	if (bind (this->m_server_socket.getSocket(), (struct sockaddr *) m_server_socket.getAddress(), len) < 0)
 	{
@@ -38,28 +31,18 @@ void Listener::init()
 	signal (SIGCHLD, SIG_IGN);
 }
 
-Socket Listener::acceptConnection()
+std::shared_ptr<Socket> Listener::acceptConnection()
 {
-	Socket socket;
-	socklen_t len = this->m_server_socket.getAddressLen();
-	int soc = accept(this->m_server_socket.getSocket(), (struct sockaddr*)socket.getAddress(), &len);
+	std::shared_ptr<Socket> client(new Socket());
+	socklen_t len = sizeof(client->getAddress());
+	int soc = accept(this->m_server_socket.getSocket(), (struct sockaddr*)client->getAddress(), &len);
 	
-	if (soc < -1)
+	if (soc < 0)
 	{
-		std::cerr << "accept() ERROR";
-		exit(1);
-	}
-	
-	socket.setSocket( soc );
-
-	if (fork() == 0)
-	{
-		std::cout << "New client" << std::endl;
-	}
-	else 
-	{
-		close(socket.getSocket());
 		throw ConnectionRefusedException();
 	}
-	return socket;
+
+	client->setSocket( soc );
+	std::cout << "SOCKET ACCEPTED: " << client->getSocket() << std::endl;
+	return client;
 }

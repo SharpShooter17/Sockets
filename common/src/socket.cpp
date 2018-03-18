@@ -26,11 +26,6 @@ Socket::Socket(int family, unsigned short port, long address)
 	this->m_address.sin_family = family;
 	this->m_address.sin_port = htons(port);
 	this->m_address.sin_addr.s_addr = address;	
-	//inet_pton
-	int opts = fcntl(this->m_socket, F_GETFL);
-	opts = opts & (~O_NONBLOCK);
-	fcntl(this->m_socket, F_SETFL, opts);
-
 }
 
 Socket::~Socket()
@@ -76,12 +71,10 @@ void Socket::connectToServer()
 void Socket::closeSocket()
 {
 	shutdown(this->m_socket, 2);
-	//close(this->m_socket);
 }
 
 char* Socket::readBytes()
 {
-	std::cout << "SOCKET: " << this->m_socket << std::endl;
 	int size = 1024;
 	char* results = new char[size];
 	bzero(results, size);
@@ -91,6 +84,7 @@ char* Socket::readBytes()
 	if (bytes < 0)
 	{
 		perror("readbytes() ERRNO: ");
+		this->closeSocket();
 		exit(1);
 	}
 	return results;

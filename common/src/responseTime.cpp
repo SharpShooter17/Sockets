@@ -1,7 +1,7 @@
 #include "responseTime.hpp"
 
 ResponseTime::ResponseTime(unsigned int timestamp) : 
-	Request(1),
+	Request(),
 	m_timestamp(timestamp)
 {
 }

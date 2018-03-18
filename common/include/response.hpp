@@ -6,6 +6,7 @@ class Response {
 	unsigned int m_request_id;
 
 	public:
+	Response(unsigned int, unsigned int):
 	unsigned int getResponseCode();
 	void setRequestCode(unsigned int);
 

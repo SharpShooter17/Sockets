@@ -1,4 +1,3 @@
-/*  Make the necessary includes and set up the variables.  */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <stdio.h>
@@ -12,49 +11,49 @@
 #include "const.hpp"
 #include <string.h>
 #include <iostream>
+#include "request.hpp"
+#include "responseTime.hpp"
+#include "protocol.hpp"
+
+void dumpHex(const void* data, unsigned int size) {
+	char ascii[17];
+	unsigned int i, j;
+	ascii[16] = '\0';
+	for (i = 0; i < size; ++i) {
+		printf("%02X ", ((unsigned char*)data)[i]);
+		if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+			ascii[i % 16] = ((unsigned char*)data)[i];
+		} else {
+			ascii[i % 16] = '.';
+		}
+		if ((i+1) % 8 == 0 || i+1 == size) {
+			printf(" ");
+			if ((i+1) % 16 == 0) {
+				printf("|  %s \n", ascii);
+			} else if (i+1 == size) {
+				ascii[(i+1) % 16] = '\0';
+				if ((i+1) % 16 <= 8) {
+					printf(" ");
+				}
+				for (j = (i+1) % 16; j < 16; ++j) {
+					printf("   ");
+				}
+				printf("|  %s \n", ascii);
+			}
+		}
+	}
+}
 
 int main()
 {
-	Socket socket(AF_INET, server_port, inet_addr(server_address));
+	Socket socket(AF_INET, server_port, inet_addr("127.0.0.1"));
 	socket.connectToServer();
+
+	Request time(1);
+	time = Protocol::assemblyRequest(time);
+	socket.writeBytes((char*)&time, sizeof(time));
 	
-	char* buff = "Ala ma kota...\n";
-	int size = strlen(buff);
-	std::cout << "SIZE: " << size << " " << buff;
-	sleep(5);
-	socket.writeBytes(buff, strlen(buff));
-	sleep(5);
 	socket.closeSocket();
 	return 0;
 }
 
-
-int main1()
-{
-	int sockfd;
-	socklen_t len;
-	struct sockaddr_in address;
-	int result;
-	char ch = 'A';
-	/*  Create a socket for the client.  */
-	sockfd = socket (AF_INET, SOCK_STREAM, 0);
-	/*  Name the socket, as agreed with the server.  */
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = inet_addr ("127.0.0.1");
-	address.sin_port = htons (9734);
-	len = sizeof (address);
-	/*  Now connect our socket to the server's socket.  */
-	result = connect (sockfd, (struct sockaddr *) &address,
-	len);
-	if (result == -1)
-	{
-		perror ("oops: netclient");
-		exit (1);
-	}
-	/*  We can now read/write via sockfd.  */
-	write (sockfd, &ch, 1);
-	read (sockfd, &ch, 1);
-	printf ("char from server = %c\n", ch);
-	close (sockfd);
-	exit (0);
-}

@@ -3,7 +3,7 @@ CFLAGS  = -g -Wall -std=c++11
 INCLUDES = -I../common/include -I./include
 LFLAGS = -L../common/src -L/src
 
-SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp ../common/src/socket.cpp src/main.cpp
+SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp ../common/src/socket.cpp ../common/src/protocol.cpp src/main.cpp
 OBJS = $(SRCS:.c=.o)
 MAIN = clientApp
 

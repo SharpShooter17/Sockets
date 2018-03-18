@@ -1,5 +1,8 @@
 #include "request.hpp"
 
+Request::Request()
+{}
+
 Request::Request(unsigned int requestCode) : 
 	m_request_code(requestCode),
 	m_request_id(nextRequest())

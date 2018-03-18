@@ -5,6 +5,7 @@
 
 #include <signal.h>
 #include <vector>
+#include <memory>
 
 class Listener
 {
@@ -16,7 +17,7 @@ class Listener
 	Listener(unsigned short, unsigned int);
 
 	void init();
-	Socket acceptConnection();
+	std::shared_ptr<Socket> acceptConnection();
 };
 
 #endif
