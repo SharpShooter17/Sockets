@@ -9,6 +9,8 @@
 
 #include "listener.hpp"
 #include "const.hpp"
+#include <iostream>
+#include "connectionrefusedexception.hpp"
 
 int main()
 {
@@ -16,10 +18,22 @@ int main()
 	listener.init();
 
 	while(true)
-	{
-		listener.acceptConnection();
+	{	
+		Socket client;
+		try {
+			std::cout << "Server wait for client\n";
+			client = listener.acceptConnection();
+			sleep(2);		
+			char * buffer = client.readBytes();
+			std::cout << *buffer << std::endl;
+			delete buffer;
+			client.closeSocket();
+		} catch (ConnectionRefusedException &ex)
+		{
+			std::cerr << ex.what() << std::endl << "ERRNO: " << errno << std::endl;
+			client.closeSocket();
+		}
 	}
-
 }
 
 int main1()

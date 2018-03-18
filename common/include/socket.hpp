@@ -31,6 +31,9 @@ class Socket
 
 	void connectToServer();
 	void closeSocket();
+	
+	char* readBytes();
+	void writeBytes(const char*, int);
 };
 
 #endif

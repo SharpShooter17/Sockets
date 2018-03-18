@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string>
 
 #include "socket.hpp"
 #include "const.hpp"
@@ -14,8 +15,13 @@ int main()
 {
 	Socket socket(AF_INET, server_port, address);
 	socket.connectToServer();
+	
+	std::string buff = "Ala ma kota...";
+
+	socket.writeBytes(buff.c_str(), buff.length());
+	sleep(5);
 	socket.closeSocket();
-	return 0;	
+	return 0;
 }
 
 
