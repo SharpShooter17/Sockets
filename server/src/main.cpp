@@ -17,35 +17,8 @@
 #include "responseTime.hpp"
 #include <string.h>
 #include "protocol.hpp"
+#include <time.h>
 
-void dumpHex(const void* data, unsigned int size) {
-	char ascii[17];
-	unsigned int i, j;
-	ascii[16] = '\0';
-	for (i = 0; i < size; ++i) {
-		printf("%02X ", ((unsigned char*)data)[i]);
-		if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
-			ascii[i % 16] = ((unsigned char*)data)[i];
-		} else {
-			ascii[i % 16] = '.';
-		}
-		if ((i+1) % 8 == 0 || i+1 == size) {
-			printf(" ");
-			if ((i+1) % 16 == 0) {
-				printf("|  %s \n", ascii);
-			} else if (i+1 == size) {
-				ascii[(i+1) % 16] = '\0';
-				if ((i+1) % 16 <= 8) {
-					printf(" ");
-				}
-				for (j = (i+1) % 16; j < 16; ++j) {
-					printf("   ");
-				}
-				printf("|  %s \n", ascii);
-			}
-		}
-	}
-}
 
 void* socket_handler(void* args)
 {
@@ -58,6 +31,19 @@ void* socket_handler(void* args)
 	req = Protocol::retreiveRequest(req);
 	
 	std::cout << "Request code: " << req.getRequestCode() << std::endl;
+
+	if (req.getRequestCode() == 1)
+	{
+		ResponseTime response = ResponseTime();
+		response.setRequestCode(10);
+		response.setRequestId(req.getRequestId());
+		int len = response.getlenght();
+		dumpHex((void*)&response, sizeof(ResponseTime));
+		Protocol::assemblyReponseTime(&response);
+		dumpHex((void*)&response, sizeof(ResponseTime));
+		client->writeBytes((char*)&response, sizeof(ResponseTime));
+		//client->writeBytes(response.getTmestamp(), len);
+	}
 	
 	delete buffer;
 	client->closeSocket();

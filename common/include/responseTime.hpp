@@ -6,11 +6,15 @@
 class ResponseTime : public Request
 {
 	private:
-	unsigned int m_timestamp;
+	unsigned int m_lenght;
+	char m_timestamp[64];
 	public:
-	ResponseTime(unsigned int timestamp = 0);
-	unsigned int getTimestamp();
-	void setTimeStamp(unsigned int);
+	ResponseTime();
+	~ResponseTime();
+	unsigned long int getlenght();
+	void setLenght(unsigned int);
+	//void setTimeStamp(char*);
+	char * getTmestamp();
 };
-
+void dumpHex(const void* data, unsigned int size);
 #endif
