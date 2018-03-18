@@ -23,14 +23,13 @@ int main()
 		try {
 			std::cout << "Server wait for client\n";
 			client = listener.acceptConnection();
-			sleep(2);		
 			char * buffer = client.readBytes();
 			std::cout << *buffer << std::endl;
 			delete buffer;
 			client.closeSocket();
 		} catch (ConnectionRefusedException &ex)
 		{
-			std::cerr << ex.what() << std::endl << "ERRNO: " << errno << std::endl;
+			perror(ex.what());
 			client.closeSocket();
 		}
 	}

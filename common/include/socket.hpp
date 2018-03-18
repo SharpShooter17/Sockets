@@ -15,11 +15,11 @@
 class Socket 
 {
 	private:
-		sockaddr_in m_address;
-		int m_socket;
+	sockaddr_in m_address;
+	int m_socket;
 	public:
 	Socket();
-	Socket(short, unsigned short, std::string);
+	Socket(int, unsigned short, long);
 	~Socket();
 
 	int getSocket();
@@ -35,5 +35,4 @@ class Socket
 	char* readBytes();
 	void writeBytes(const char*, int);
 };
-
 #endif

@@ -10,15 +10,22 @@
 #include <errno.h>
 
 Listener::Listener(unsigned short port, unsigned int maxClients) :
-	m_server_socket(AF_INET, port, "127.0.0.1"), 
+	m_server_socket(AF_INET, port, htonl(INADDR_ANY)), 
 	m_max_connections(maxClients)
 {
 }
 
 void Listener::init()
 {
+	int yes = 1;
+	int e = setsockopt(this->m_server_socket.getSocket(), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+	if (e != 0)
+	{
+		std::cerr << "setsockopt() ERROR" << " ERRNO: " << errno << std::endl;
+		exit(1);
+	}
 	socklen_t len = this->m_server_socket.getAddressLen();
-	if (bind (this->m_server_socket.getSocket(), (struct sockaddr *) this->m_server_socket.getAddress(), len) < 0)
+	if (bind (this->m_server_socket.getSocket(), (struct sockaddr *) m_server_socket.getAddress(), len) < 0)
 	{
 		std::cerr << "bind() ERROR" << " ERRNO: " << errno << std::endl;
 		exit(1);

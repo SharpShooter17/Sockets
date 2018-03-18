@@ -10,15 +10,19 @@
 
 #include "socket.hpp"
 #include "const.hpp"
+#include <string.h>
+#include <iostream>
 
 int main()
 {
-	Socket socket(AF_INET, server_port, address);
+	Socket socket(AF_INET, server_port, inet_addr(server_address));
 	socket.connectToServer();
 	
-	std::string buff = "Ala ma kota...";
-
-	socket.writeBytes(buff.c_str(), buff.length());
+	char* buff = "Ala ma kota...\n";
+	int size = strlen(buff);
+	std::cout << "SIZE: " << size << " " << buff;
+	sleep(5);
+	socket.writeBytes(buff, strlen(buff));
 	sleep(5);
 	socket.closeSocket();
 	return 0;
