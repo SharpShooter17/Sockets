@@ -73,9 +73,8 @@ void Socket::closeSocket()
 	shutdown(this->m_socket, 2);
 }
 
-char* Socket::readBytes()
+char* Socket::readBytes(unsigned int size)
 {
-	int size = 1024;
 	char* results = new char[size];
 	bzero(results, size);
 	int bytes;

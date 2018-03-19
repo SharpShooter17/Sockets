@@ -21,19 +21,14 @@ int main()
 	std::cout << "TIME: " << sizeof(time_t) << " LONG INT: " << sizeof (unsigned long int) << " DOUBLE: " << sizeof(double)<< std::endl;
 	Socket socket(AF_INET, server_port, inet_addr("127.0.0.1"));
 	socket.connectToServer();
-
-	Request time(1);
-	time = Protocol::assemblyRequest(time);
-	socket.writeBytes((char*)&time, sizeof(time));
-	char* buff = socket.readBytes();
-	ResponseTime * t = (ResponseTime*)buff;
-	dumpHex(t, sizeof(ResponseTime));
-	Protocol::retreiveReponseTime(t);
-	dumpHex(t, sizeof(ResponseTime));
+	
+	Protocol::sendTimeRequest(socket);
+	ResponseTime * t = (ResponseTime *)Protocol::getResponse(socket);
 	printf("Time: %s\n", t->getTmestamp());
 	std::cout << "len: " <<  t->getlenght() << " code: " << t->getRequestCode() << std::endl;
+
 	socket.closeSocket();
-	delete buff;
+	delete t;
 	return 0;
 }
 

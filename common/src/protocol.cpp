@@ -2,15 +2,27 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include "endianness.hpp"
+#include <string.h>
 
-REQUEST Protocol::getTypeOfRequest(Request req)
+
+Request * Protocol::getResponse(Socket & socket)
 {
-	if (req.getRequestCode() == 1)
+	Request * req = (Request*)socket.readBytes(sizeof(Request));
+	Request r = *req;
+	r = Protocol::retreiveRequest(r);
+	dumpHex(&r, sizeof(Request));
+	//Time response
+	if (r.getRequestCode() == 10)
 	{
-		return REQUEST::TIME;
-	} else if (req.getRequestCode() == 2)
-	{
-		return REQUEST::SQRT;
+		
+		ResponseTime * time = new ResponseTime;
+		strncpy((char*)time, (const char *)req, sizeof(Request));
+		//delete req;
+		int restOfBytes = sizeof(ResponseTime) - sizeof(Request);
+		char * buff = socket.readBytes(restOfBytes);
+		strncpy((char*)(time + sizeof(Request)), buff, restOfBytes);
+		Protocol::retreiveReponseTime(time);
+		return time;
 	}
 }
 	
@@ -40,4 +52,11 @@ void Protocol::assemblyReponseTime(ResponseTime* response)
 	response->setRequestCode( htonl(response->getRequestCode()) );
 	response->setRequestId( htonl(response->getRequestId()));
 	response->setLenght(htonl(response->getlenght()));
+}
+
+void Protocol::sendTimeRequest(Socket & socket)
+{
+	Request time(1);
+	time = Protocol::assemblyRequest(time);
+	socket.writeBytes((char*)&time, sizeof(time));
 }
