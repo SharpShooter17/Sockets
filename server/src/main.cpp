@@ -1,35 +1,21 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "listener.hpp"
 #include "const.hpp"
 #include <iostream>
-#include "connectionrefusedexception.hpp"
 #include <pthread.h>
-#include <memory>
 #include "request.hpp"
 #include "responseTime.hpp"
 #include <string.h>
 #include "protocol.hpp"
-#include <time.h>
 #include <cmath>
 
 
 void* socket_handler(void* args)
 {
-	std::cout << "Socket handler" << std::endl;
 	std::shared_ptr<Socket> client = *(std::shared_ptr<Socket>*)args;
 	int requests = 2;
 	while(requests != 0)
 	{
 		Request * r = (Request*)Protocol::getResponse(*client);
-		std::cout << "Request code: " << r->getRequestCode() << std::endl;
 
 		if (r->getRequestCode() == 1)
 		{			

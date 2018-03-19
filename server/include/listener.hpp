@@ -4,7 +4,6 @@
 #include "socket.hpp"
 
 #include <signal.h>
-#include <vector>
 #include <memory>
 
 class Listener
