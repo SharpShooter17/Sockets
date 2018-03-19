@@ -1,6 +1,5 @@
 #include "protocol.hpp"
 #include <arpa/inet.h>
-#include <iostream>
 #include "endianness.hpp"
 #include <string.h>
 
@@ -20,30 +19,24 @@ Request * Protocol::getResponse(Socket & socket)
 	Request * req = (Request*)socket.readBytes(sizeof(Request));
 	Request r = *req;
 	r = Protocol::retreiveRequest(r);
-	dumpHex(&r, sizeof(Request));
-	//Time response
 	if (r.getRequestCode() == 10)
 	{
-		std::cout << "Time response\n";
 		ResponseTime * time = (ResponseTime*)getRestOfBytesAndBuildObject(socket, sizeof(ResponseTime) - sizeof(Request), req);
 		Protocol::retreiveReponseTime(time);
 		return time;
 	}
 	else if (r.getRequestCode() == 20 )
 	{
-		std::cout << "SQRT response\n";
 		SqrtRequest * sq = (SqrtRequest*)getRestOfBytesAndBuildObject(socket, sizeof(SqrtRequest) - sizeof(Request), req);
 		Protocol::retreiveSqrtRequest(sq);
 		return sq;
 	} 
 	else if (r.getRequestCode() == 2){
-		std::cout << "SQRT request\n";
 		SqrtRequest * sq = (SqrtRequest*)getRestOfBytesAndBuildObject(socket, sizeof(SqrtRequest) - sizeof(Request), req);
 		Protocol::retreiveSqrtRequest(sq);
 		return sq;
 	} else if (r.getRequestCode() == 1)
 	{
-		std::cout << "Time request\n";
 		*req = Protocol::retreiveRequest(*req);
 		return req;
 	}
@@ -103,6 +96,5 @@ void Protocol::sendSqrtRequest(Socket & socket, double s)
 	SqrtRequest req(2);
 	req.setSqurt(s);
 	Protocol::assemblySqrtRequest(&req);
-	dumpHex(&req, sizeof(SqrtRequest));
 	socket.writeBytes((const char*)&req, sizeof(SqrtRequest));
 }
