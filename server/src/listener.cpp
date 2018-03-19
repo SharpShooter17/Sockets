@@ -43,6 +43,5 @@ std::shared_ptr<Socket> Listener::acceptConnection()
 	}
 
 	client->setSocket( soc );
-	std::cout << "SOCKET ACCEPTED: " << client->getSocket() << std::endl;
 	return client;
 }

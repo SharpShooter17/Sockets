@@ -1,53 +1,46 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <signal.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "listener.hpp"
 #include "const.hpp"
 #include <iostream>
-#include "connectionrefusedexception.hpp"
 #include <pthread.h>
-#include <memory>
 #include "request.hpp"
 #include "responseTime.hpp"
 #include <string.h>
 #include "protocol.hpp"
-#include <time.h>
+#include <cmath>
 
 
 void* socket_handler(void* args)
 {
-	std::cout << "Socket handler" << std::endl;
 	std::shared_ptr<Socket> client = *(std::shared_ptr<Socket>*)args;
-	
-	char* buffer = client->readBytes(sizeof(Request));
-	Request req = *(Request*)buffer;
-		
-	req = Protocol::retreiveRequest(req);
-	
-	std::cout << "Request code: " << req.getRequestCode() << std::endl;
-
-	if (req.getRequestCode() == 1)
+	int requests = 2;
+	while(requests != 0)
 	{
-		ResponseTime response = ResponseTime();
-		response.setRequestCode(10);
-		response.setRequestId(req.getRequestId());
-		int len = response.getlenght();
-		dumpHex((void*)&response, sizeof(ResponseTime));
-		Protocol::assemblyReponseTime(&response);
-		dumpHex((void*)&response, sizeof(ResponseTime));
-		client->writeBytes((char*)&response, sizeof(ResponseTime));
-		//client->writeBytes(response.getTmestamp(), len);
+		Request * r = (Request*)Protocol::getResponse(*client);
+
+		if (r->getRequestCode() == 1)
+		{			
+			ResponseTime response = ResponseTime();
+			response.setRequestCode(10);
+			response.setRequestId(r->getRequestId());
+			int len = response.getlenght();
+			Protocol::assemblyReponseTime(&response);
+			client->writeBytes((char*)&response, sizeof(ResponseTime));
+			delete[] (char*)r;
+			requests--;
+		} 
+		else if (r->getRequestCode() == 2)
+		{
+			SqrtRequest * sr = (SqrtRequest *)r;
+			sr->setRequestCode(20);
+			sr->setSqurt(std::sqrt(sr->getSqrt()));
+			Protocol::assemblySqrtRequest(sr);
+			client->writeBytes((char*)sr, sizeof(SqrtRequest));
+			requests--;
+			delete[] (char*)sr;
+		}
 	}
 	
-	delete buffer;
 	client->closeSocket();
-	
 	return NULL;
 }
 

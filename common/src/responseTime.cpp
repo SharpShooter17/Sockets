@@ -9,16 +9,10 @@ ResponseTime::ResponseTime() : Request()
 {
 	time_t     now;
     struct tm  ts;
-    // Get current time
     time(&now);
-
-    // Format time, "ddd yyyy-mm-dd hh:mm:ss zzz"
     ts = *localtime(&now);
     strftime(this->m_timestamp, sizeof(this->m_timestamp), "%a %Y-%m-%d %H:%M:%S %Z", &ts);
-    printf("%s\n", this->m_timestamp);
     this->m_lenght = strlen(this->m_timestamp);
-    dumpHex(this->m_timestamp,  this->m_lenght);
-    std::cout << "LEN: " << this->m_lenght << std::endl;
 }
 char* ResponseTime::getTmestamp()
 {
@@ -30,11 +24,6 @@ void ResponseTime::setLenght(unsigned int len)
 	this->m_lenght;
 }
 
-/*void ResponseTime::setTimeStamp(char timestamp[64])
-{
-	this->m_timestamp = timestamp;
-}
-*/
 unsigned long int ResponseTime::getlenght()
 {
 	return this->m_lenght;
@@ -43,7 +32,7 @@ unsigned long int ResponseTime::getlenght()
 ResponseTime::~ResponseTime()
 {
 }
-
+/*
 
 void dumpHex(const void* data, unsigned int size) {
 	char ascii[17];
@@ -73,3 +62,4 @@ void dumpHex(const void* data, unsigned int size) {
 		}
 	}
 }
+*/

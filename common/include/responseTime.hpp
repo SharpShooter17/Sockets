@@ -13,8 +13,7 @@ class ResponseTime : public Request
 	~ResponseTime();
 	unsigned long int getlenght();
 	void setLenght(unsigned int);
-	//void setTimeStamp(char*);
 	char * getTmestamp();
 };
-void dumpHex(const void* data, unsigned int size);
+//void dumpHex(const void* data, unsigned int size);
 #endif

@@ -2,7 +2,6 @@
 #include <string.h>
 #include <iostream>
 #include <errno.h>
-#include <fcntl.h>
 
 Socket::Socket()	
 {
@@ -77,9 +76,7 @@ char* Socket::readBytes(unsigned int size)
 {
 	char* results = new char[size];
 	bzero(results, size);
-	int bytes;
-	bytes = recv(this->m_socket, results, size, 0);	
-	std::cout << "Read bytes: " << bytes << std::endl;
+	int bytes = recv(this->m_socket, results, size, 0);	
 	if (bytes < 0)
 	{
 		perror("readbytes() ERRNO: ");
@@ -91,7 +88,5 @@ char* Socket::readBytes(unsigned int size)
 
 void Socket::writeBytes(const char * bytes, int size)
 {
-	int c;
-	c = send(this->m_socket, bytes, size, 0);
-	std::cout << "BYTES SEND: " << c << " socket: " << this->m_socket << std::endl;
+	send(this->m_socket, bytes, size, 0);
 }
