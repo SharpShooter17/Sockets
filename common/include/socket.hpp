@@ -32,7 +32,7 @@ class Socket
 	void connectToServer();
 	void closeSocket();
 	
-	char* readBytes();
+	char* readBytes(unsigned int);
 	void writeBytes(const char*, int);
 };
 #endif

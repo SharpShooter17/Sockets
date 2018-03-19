@@ -25,7 +25,7 @@ void* socket_handler(void* args)
 	std::cout << "Socket handler" << std::endl;
 	std::shared_ptr<Socket> client = *(std::shared_ptr<Socket>*)args;
 	
-	char* buffer = client->readBytes();
+	char* buffer = client->readBytes(sizeof(Request));
 	Request req = *(Request*)buffer;
 		
 	req = Protocol::retreiveRequest(req);
