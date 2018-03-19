@@ -3,7 +3,7 @@ CFLAGS  = -g -Wall -std=c++11 -pthread
 INCLUDES = -I../common/include -I./include
 LFLAGS = -L../common/src -L/src
 
-SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp ../common/src/socket.cpp  ../common/src/protocol.cpp ../common/src/endianness.cpp src/main.cpp src/listener.cpp
+SRCS = ../common/src/request.cpp ../common/src/responseTime.cpp ../common/src/socket.cpp  ../common/src/protocol.cpp ../common/src/endianness.cpp ../common/src/sqrtRequest.cpp src/main.cpp src/listener.cpp
 OBJS = $(SRCS:.c=.o)
 MAIN = serverApp
 
