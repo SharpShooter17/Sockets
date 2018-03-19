@@ -23,12 +23,30 @@ int main()
 	socket.connectToServer();
 	
 	Protocol::sendTimeRequest(socket);
-	ResponseTime * t = (ResponseTime *)Protocol::getResponse(socket);
-	printf("Time: %s\n", t->getTmestamp());
-	std::cout << "len: " <<  t->getlenght() << " code: " << t->getRequestCode() << std::endl;
+	Protocol::sendSqrtRequest(socket, 9);
+	
+	int requestsSended = 2;
+	while (requestsSended != 0)
+	{
+		Request * r = (Request*)Protocol::getResponse(socket);
+		dumpHex(r, sizeof(Request));
+		if (r->getRequestCode() == 10) 
+		{
+			ResponseTime * time = (ResponseTime*)r;
+			std::cout << "len: " <<  time->getlenght() << " code: " << time->getRequestCode() << " TIME: " << time->getTmestamp() <<std::endl;
+			requestsSended--;
+			delete[] (char*)time;
+		}
+		else if (r->getRequestCode() == 20)
+		{
+			SqrtRequest * sr = (SqrtRequest*)r;
+			std::cout << "Pierwiastek z liczby 9 to: " << sr->getSqrt() << std::endl;
+			requestsSended--;
+			delete[] (char*)time;
+		}
+	}	
 
 	socket.closeSocket();
-	delete t;
 	return 0;
 }
 

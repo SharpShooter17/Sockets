@@ -75,10 +75,10 @@ void Socket::closeSocket()
 
 char* Socket::readBytes(unsigned int size)
 {
+	std::cout << "Socket: " << this->getSocket() << std::endl;
 	char* results = new char[size];
 	bzero(results, size);
-	int bytes;
-	bytes = recv(this->m_socket, results, size, 0);	
+	int bytes = recv(this->m_socket, results, size, 0);	
 	std::cout << "Read bytes: " << bytes << std::endl;
 	if (bytes < 0)
 	{

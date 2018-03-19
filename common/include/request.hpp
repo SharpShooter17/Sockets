@@ -3,12 +3,7 @@
 
 class Request {
 	private:
-	union 
-	{ 
-		unsigned int m_request_code;
-		unsigned char codeCh[4];
-	};
-	
+	unsigned int m_request_code;
 	unsigned int m_request_id;
 	
 	public:
@@ -20,8 +15,6 @@ class Request {
 
 	unsigned int getRequestId();
 	void setRequestId(unsigned int);
-	
-	unsigned char* getCodeCh() { return this->codeCh; }
 };
 
 static unsigned int m_request_id_counter = 0;
